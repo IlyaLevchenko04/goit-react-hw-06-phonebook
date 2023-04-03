@@ -7,22 +7,15 @@ export const contactsSlice = createSlice({
   name: 'contacts',
   initialState: contactsInitialState,
   reducers: {
-    addContact(state, action) {
-      const isInContacts = state.some(
-        ({ name }) => name.toLowerCase() === action.payload.name.toLowerCase()
-      );
-      if (isInContacts) {
-        alert('Person already in contacts');
-        return;
-      }
-      return [
-        ...state,
-        {
-          name: action.payload.name,
-          number: action.payload.number,
-          id: nanoid(),
-        },
-      ];
+    addContact: {
+      reducer(state, action) {
+        return [...state, action.payload];
+      },
+      prepare(newContact) {
+        return {
+          payload: { ...newContact, id: nanoid() },
+        };
+      },
     },
 
     deleteContact(state, action) {

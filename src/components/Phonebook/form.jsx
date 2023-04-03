@@ -1,13 +1,23 @@
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addContact } from 'redux/ContactsSlice';
+import { getContacts } from 'redux/selectors';
 export const ContactForm = () => {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
+  const contacts = useSelector(getContacts);
 
   const dispatch = useDispatch();
 
   const handleAddContact = contact => {
+    const isInContacts = contacts.some(
+      contact => contact.name.toLowerCase() === name.toLowerCase()
+    );
+    if (isInContacts) {
+      alert('Person already in contacts');
+      return;
+    }
+
     dispatch(addContact(contact));
   };
 
@@ -18,13 +28,10 @@ export const ContactForm = () => {
   };
 
   const handlerChange = evt => {
-    if (evt.currentTarget.name === 'name') {
-      setName(evt.currentTarget.value);
-    }
+    const { name, value } = evt.target;
+    if (name === 'name') setName(value);
 
-    if (evt.currentTarget.name === 'number') {
-      setNumber(evt.currentTarget.value);
-    }
+    if (name === 'number') setNumber(value);
   };
 
   return (
@@ -32,6 +39,7 @@ export const ContactForm = () => {
       <label>Name</label>
       <input
         onChange={handlerChange}
+        // value={name}
         type="text"
         name="name"
         pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
@@ -41,6 +49,7 @@ export const ContactForm = () => {
       <label>Phone number</label>
       <input
         onChange={handlerChange}
+        // value={number}
         type="tel"
         name="number"
         pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
